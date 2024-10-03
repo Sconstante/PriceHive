@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>PriceHive</title>
+  </head>
+  <body>
+    <h1>PriceHive</h1>
+    <div id="loading-icon" class="loading ">
+      <img src="/images/cargando.png" alt="Loading...">
+    </div>
+    <form action="/product" method="POST">
+      <input
+        type="text"
+        name="product"
+        id="product"
+        placeholder="¿Qué buscas hoy?"
+      />
+      <input type="submit" id="search-btn" value="Buscar" />
+    </form>
+    <% if (locals.products) { %>
+      <% if (noProducts) { %>
+        <h1 id="noProducts">Ninguna tienda cuenta con el producto digitado</h1>
+      <% } else {%>
+        <script>
+          document.getElementById('loading-icon').style.display = 'none';
+        </script>
+        <div class="sort_options">
+          <form action="/products" method="GET">
+            <input type="submit" value="Ordenar" />
+            <select name="sortBy" id="sortBy">
+              <option value="shop" <% if (sortBy === 'shop') { %> selected <% } %>>Tienda</option>
+              <option value="lowPrice" <% if (sortBy === 'lowPrice') { %> selected <% } %>>Precio más bajo</option>
+              <option value="highPrice" <% if (sortBy === 'highPrice') { %> selected <% } %>>Precio más alto</option>
+            </select>
+          </form>
+        </div>
+        <div class="products_container">
+          <% products.forEach((prod) => { %>
+          <div class="product">
+            <img src="<%=prod.img%>" alt="img" class=<%= prod.shop === 'Mercado Libre'? 'img_mercadoLibre' : 'img_others' %> >
+            <h2><%= prod.name %> <span class="<%= prod.shop.split(' ')[0].toLowerCase() %>"> (<%= prod.shop %>) </span></h2>
+            <h3>Precio: <%= prod.price %></h3>
+            <h4>Descripción %></h4>
+            <ul>
+              <% prod.description.forEach((desc) => { %>
+              <li><%= desc %></li>
+              <% }) %>
+            </ul>
+            <a href="<%= prod.link %>">Puede comprar el producto aquí</a>
+          </div>
+          <% }) %> <% } %>
+        </div>
+        <% if (locals.currentPage) { %>
+          <div class="pagination_container">
+            <div class="pagination">
+              <% if (currentPage > 1) { %>
+              <a href="/products?page=<%= currentPage - 1 %>">Anterior</a>
+              <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+              <a
+                href="/products?page=<%= i %>"
+                class="<%= currentPage === i ? 'active' : '' %>"
+                ><%= i %></a
+              >
+              <% } %> <% if (currentPage < totalPages) { %>
+              <a href="/products?page=<%= currentPage + 1 %>">Siguiente</a>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+    <% } %>
+
+    <script>
+      document.querySelector('form').addEventListener('submit', function() {
+        document.getElementById('loading-icon').style.display = 'block';
+      });
+    </script>
+  </body>
+</html>
